@@ -137,8 +137,29 @@ public:
             const GeometricField<Type, fvPatchField, volMesh>&
         ) const;
 };
+/*
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+vanLeerInterpolate(const GeometricField<Type, fvPatchField, volMesh>& vf)
+{
+    return surfaceInterpolationScheme<Type>::interpolate
+    (
+        vf,
+        weights(vf)
+    );
+}
 
 
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+vanLeerInterpolate(const tmp<GeometricField<Type, fvPatchField, volMesh> >& tvf)
+{
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
+        vanLeerInterpolate(tvf());
+    tvf.clear();
+    return tinterp;
+}
+*/
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam

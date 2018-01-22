@@ -40,6 +40,7 @@ SourceFiles
 #define vanLeer_H
 
 #include "vector.H"
+#include "limitedSurfaceInterpolationScheme.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -80,6 +81,70 @@ public:
         return (r + mag(r))/(1 + mag(r));
     }
 };
+
+/*
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+vanLeerInterpolate(const GeometricField<Type, fvPatchField, volMesh>& vf)
+{
+    const word name("base");
+    //const word schemeName("Gauss vanLeer");
+    return limitedSurfaceInterpolationScheme<Type>::New
+    (
+        vf.mesh(),
+        vf.mesh().interpolationScheme(name)
+    )().interpolate(vf);
+
+}
+
+
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+vanLeerInterpolate(const tmp<GeometricField<Type, fvPatchField, volMesh> >& tvf)
+{
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
+        vanLeerInterpolate(tvf());
+    tvf.clear();
+    return tinterp;
+}
+*/
+
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+vanLeerInterpolate
+(
+    const GeometricField<Type, fvPatchField, volMesh>& vf,
+    const GeometricField<Type, fvsPatchField, surfaceMesh>& faceFlux
+)
+{
+    const word name("base");
+    //const word schemeName("Gauss vanLeer");
+    return limitedSurfaceInterpolationScheme<Type>::New
+    (
+        vf.mesh(),
+        faceFlux,
+        vf.mesh().interpolationScheme(name)
+    )().interpolate(vf);
+}
+
+
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+vanLeerInterpolate
+(
+    const tmp<GeometricField<Type, fvPatchField, volMesh> >& tvf,
+    const tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >& tsf
+)
+{
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
+        vanLeerInterpolate(tvf(), tsf());
+    tvf.clear();
+    tsf.clear();
+    return tinterp;
+}
+
+
+
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

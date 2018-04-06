@@ -128,6 +128,39 @@ public:
 };
 
 
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+downwindInterpolate
+(
+    const GeometricField<Type, fvPatchField, volMesh>& vf,
+    const GeometricField<Type, fvsPatchField, surfaceMesh>& faceFlux
+)
+{
+    const word name("base1");
+    return surfaceInterpolationScheme<Type>::New
+    (
+        vf.mesh(),
+        faceFlux,
+        vf.mesh().interpolationScheme(name)
+    )().interpolate(vf);
+}
+
+
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+downwindInterpolate
+(
+    const tmp<GeometricField<Type, fvPatchField, volMesh> >& tvf,
+    const tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >& tsf
+)
+{
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
+        downwindInterpolate(tvf(), tsf());
+    tvf.clear();
+    tsf.clear();
+    return tinterp;
+}
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam

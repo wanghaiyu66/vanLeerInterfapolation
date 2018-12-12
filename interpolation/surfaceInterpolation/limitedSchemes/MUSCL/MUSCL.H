@@ -39,7 +39,7 @@ SourceFiles
 #define MUSCL_H
 
 #include "vector.H"
-
+#include "limitedSurfaceInterpolationScheme.H"
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -80,6 +80,39 @@ public:
     }
 };
 
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+MUSCLInterpolate
+(
+    const GeometricField<Type, fvPatchField, volMesh>& vf,
+    const GeometricField<Type, fvsPatchField, surfaceMesh>& faceFlux
+)
+{
+    const word name("base");
+    //const word schemeName("Gauss vanLeer");
+    return limitedSurfaceInterpolationScheme<Type>::New
+    (
+        vf.mesh(),
+        faceFlux,
+        vf.mesh().interpolationScheme(name)
+    )().interpolate(vf);
+}
+
+
+template<class Type>
+tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+MUSCLInterpolate
+(
+    const tmp<GeometricField<Type, fvPatchField, volMesh> >& tvf,
+    const tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >& tsf
+)
+{
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
+        MUSCLInterpolate(tvf(), tsf());
+    tvf.clear();
+    tsf.clear();
+    return tinterp;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
